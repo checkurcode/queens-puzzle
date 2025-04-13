@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Queens Puzzle</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    .board { display: grid; grid-template-columns: repeat(8, 40px); gap: 2px; margin: 20px auto; }
+    .cell {
+      width: 40px; height: 40px;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .region-0 { background-color: #ffdede; }
+    .region-1 { background-color: #ffeeb5; }
+    .region-2 { background-color: #c8f7d8; }
+    .region-3 { background-color: #ddeeff; }
+    .x { color: gray; }
+    .queen { color: black; }
+  </style>
+</head>
+<body>
+  <h1>Queens Puzzle</h1>
+  <div id="board" class="board"></div>
+  <p>Tap to place/remove a Queen (Q). Queens can't touch each other, even diagonally.</p>
+  <script>
+    const size = 8;
+    const board = document.getElementById('board');
+    const colorRegions = [
+      [0,0,0,1,1,1,2,2],
+      [0,0,0,1,1,1,2,2],
+      [0,0,0,1,1,1,2,2],
+      [3,3,3,1,1,1,2,2],
+      [3,3,3,1,1,1,2,2],
+      [3,3,3,0,0,0,1,1],
+      [2,2,2,0,0,0,1,1],
+      [2,2,2,3,3,3,1,1]
+    ];
+
+    const state = Array(size).fill(null).map(() => Array(size).fill(''));
+
+    function renderBoard() {
+      board.innerHTML = '';
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          const cell = document.createElement('div');
+          cell.className = `cell region-${colorRegions[r][c]}`;
+          cell.textContent = state[r][c];
+          cell.onclick = () => toggleQueen(r, c);
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    function isSafe(row, col) {
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          if (state[r][c] === 'Q') {
+            if (r === row || c === col || colorRegions[r][c] === colorRegions[row][col] ||
+              Math.abs(r - row) <= 1 && Math.abs(c - col) <= 1) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    }
+
+    function toggleQueen(row, col) {
+      if (state[row][col] === 'Q') {
+        state[row][col] = '';
+      } else {
+        if (!isSafe(row, col)) {
+          alert("Invalid move. Queens can't touch or share row/col/region.");
+          return;
+        }
+        state[row][col] = 'Q';
+      }
+      renderBoard();
+    }
+
+    renderBoard();
+  </script>
+</body>
+</html>
